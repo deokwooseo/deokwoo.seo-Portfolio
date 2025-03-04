@@ -1,50 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>Interactive Shader Visualization</title>
+  <title>Colorful Bubbles</title>
   <style>
-    html, body {
+    html,
+    body {
       margin: 0;
       height: 100%;
       overflow: hidden;
     }
+
     canvas {
       display: block;
     }
   </style>
 </head>
+
 <body>
   <canvas id="glCanvas"></canvas>
   <script>
-    const canvas = document.getElementById('glCanvas');
+    const canvas = document.getElementById("glCanvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    const gl = canvas.getContext('webgl');
-    if (!gl) {
-      alert("Your browser does not support WebGL.");
-    }
-
-    const vertexShaderSource = `
-      attribute vec2 a_position;
-      void main() {
-        gl_Position = vec4(a_position, 0.0, 1.0);
-      }
-    `;
-
-    const fragmentShaderSource = `
-      precision mediump float;
-      uniform vec2 u_resolution;
-      uniform vec2 u_mouse;
-      uniform float u_time;
-      void main() {
-        vec2 st = gl_FragCoord.xy / u_resolution;
-        float d = distance(st, u_mouse / u_resolution);
-        vec3 color = vec3(0.5 + 0.5 * cos(u_time + st.xyx + vec3(0,2,4))) - d;
-        gl_FragColor = vec4(color, 1.0);
-      }
-    `;
-
+    const gl = canvas.getContext("webgl");
+    if (!gl) { alert("Your browser does not support WebGL."); }
+    const vsSource = `attribute vec2 a_position; void main(){ gl_Position = vec4(a_position, 0.0, 1.0); }`;
+    const fsSource = `
+precision mediump float;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+#define NUM_BUBBLES 10
+float circleSDF(vec2 p, float r){ return length(p)-r; }
+float rand(vec2 co){ return fract(sin(dot(co, vec2(12.9898,78.233)))*43758.5453); }
+float bounce(float x){ return abs(mod(x,2.0)-1.0); }
+void main(){
+  vec2 st = gl_FragCoord.xy/u_resolution;
+  vec3 col = vec3(0.0);
+  vec2 mouseNorm = u_mouse/u_resolution;
+  vec2 dir = normalize(mouseNorm-vec2(0.5));
+  for(int i=0; i<NUM_BUBBLES; i++){
+    float fi = float(i);
+    vec2 seed = vec2(fi, fi*1.3);
+    vec2 base = vec2(0.2+0.6*rand(seed), 0.2+0.6*rand(seed.yx));
+    vec2 defaultVel = vec2(cos(u_time+fi), sin(u_time+fi))*0.01;
+    vec2 mouseVel = 0.1 * dir * (0.01+0.01*rand(seed*1.7));
+    vec2 velocity = defaultVel + mouseVel;
+    vec2 posRaw = base + velocity*u_time;
+    vec2 pos = vec2(bounce(posRaw.x), bounce(posRaw.y));
+    float d = circleSDF(st-pos, 0.04);
+    float mask = 1.0 - smoothstep(0.0, 0.008, d);
+    vec3 bubbleColor = vec3(0.5+0.5*cos(u_time+fi*1.1),
+                             0.5+0.5*sin(u_time+fi*1.3+1.0),
+                             0.5+0.5*cos(u_time+fi*1.7+2.0));
+    col += bubbleColor * mask;
+  }
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
     function compileShader(type, source) {
       const shader = gl.createShader(type);
       gl.shaderSource(shader, source);
@@ -56,10 +71,8 @@
       }
       return shader;
     }
-
-    const vertexShader = compileShader(gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
-
+    const vertexShader = compileShader(gl.VERTEX_SHADER, vsSource);
+    const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fsSource);
     const program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
@@ -68,14 +81,9 @@
       console.error(gl.getProgramInfoLog(program));
     }
     gl.useProgram(program);
-
     const vertices = new Float32Array([
-      -1, -1,
-       1, -1,
-      -1,  1,
-      -1,  1,
-       1, -1,
-       1,  1,
+      -1, -1, 1, -1, -1, 1,
+      -1, 1, 1, -1, 1, 1
     ]);
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -83,16 +91,11 @@
     const aPosition = gl.getAttribLocation(program, "a_position");
     gl.enableVertexAttribArray(aPosition);
     gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
-
     const uResolution = gl.getUniformLocation(program, "u_resolution");
     const uMouse = gl.getUniformLocation(program, "u_mouse");
     const uTime = gl.getUniformLocation(program, "u_time");
-
-    let mousePos = [0, 0];
-    window.addEventListener("mousemove", (e) => {
-      mousePos = [e.clientX, canvas.height - e.clientY];
-    });
-
+    let mousePos = [canvas.width / 2, canvas.height / 2];
+    window.addEventListener("mousemove", e => { mousePos = [e.clientX, canvas.height - e.clientY]; });
     const startTime = Date.now();
     function render() {
       const currentTime = (Date.now() - startTime) / 1000;
@@ -103,7 +106,6 @@
       requestAnimationFrame(render);
     }
     render();
-
     window.addEventListener("resize", () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -112,4 +114,5 @@
     gl.viewport(0, 0, canvas.width, canvas.height);
   </script>
 </body>
+
 </html>
