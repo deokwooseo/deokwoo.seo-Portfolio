@@ -59,6 +59,7 @@ section {
 img {
   display: block;
   max-width: 100%;
+  pointer-events: none;
 }
 
 strong {
@@ -99,6 +100,7 @@ h3 {
 
 h1 {
   font-size: var(--fs-h1);
+  pointer-events: none;
 }
 
 h2 {
@@ -124,6 +126,7 @@ h3 {
 .section__subtitle {
   margin: 0;
   font-size: var(--fs-h3);
+  pointer-events: none;
 }
 
 .section__subtitle--intro,
@@ -132,6 +135,7 @@ h3 {
   padding: 0.25em 1em;
   font-family: var(--ff-secondary);
   margin-bottom: 1em;
+  pointer-events: none;
 }
 
 .section__subtitle--projects {
@@ -146,6 +150,7 @@ header {
   justify-content: space-between;
   padding: 1em;
 }
+
 .logo {
   max-width: 528px;
 }
@@ -243,6 +248,7 @@ header {
 .hamburger::before {
   top: 6px;
 }
+
 .hamburger::after {
   bottom: 6px;
 }
@@ -307,6 +313,7 @@ header {
     position: relative;
     left: -1.5em;
     width: calc(100% + 1.5em);
+    pointer-events: none;
   }
 }
 
@@ -353,7 +360,7 @@ header {
     margin-right: auto;
   }
 
-  .service + .service {
+  .service+.service {
     margin-left: 2em;
   }
 }
@@ -546,7 +553,9 @@ header {
   max-width: 1200px;
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 3; /* Maintain aspect ratio */
-  margin: 0 auto; /* Centering */
+  aspect-ratio: 4 / 3;
+  /* Maintain aspect ratio */
+  margin: 0 auto;
+  /* Centering */
   border: none;
 }
