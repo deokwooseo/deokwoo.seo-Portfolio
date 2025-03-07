@@ -27,7 +27,7 @@
     uniform mat4 model2View;
     uniform mat4 view2clip;
     void main() {
-      gl_PointSize = 4.0;
+      gl_PointSize = 3.0;
       gl_Position = view2clip * model2View * vec4(a_position, 1.0);
     }
   `;
