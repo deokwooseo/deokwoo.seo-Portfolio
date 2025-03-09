@@ -1,15 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
   <meta charset="UTF-8">
   <title>Interactive Snow Shader</title>
   <style>
-    html, body {
-        margin: 0;
-        height: 100%;
-        overflow: hidden;
-    }
     canvas {
       display: block;
     }
@@ -125,6 +120,13 @@
       requestAnimationFrame(render);
     }
     render();
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        lastTime = performance.now();
+      }
+    });
+
     window.addEventListener("resize", () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
