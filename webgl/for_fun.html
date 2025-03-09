@@ -6,6 +6,7 @@
   <title>Interactive Snow Shader</title>
   <style>
     html, body {
+        margin: 0;
         height: 100%;
         overflow: hidden;
     }
@@ -111,6 +112,7 @@
     function render() {
       let now = performance.now();
       let delta = (now - lastTime) / 1000;
+      delta = Math.min(delta, 0.1);
       lastTime = now;
       updateSnow(delta);
       if (isMouseOver) {
