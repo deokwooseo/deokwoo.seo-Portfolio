@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <title>Interactive Snow Shader</title>
+  <title>Interactive Cherry Blossom Shader</title>
   <style>
-    html, body {
-        margin: 0;
-        height: 100%;
-        overflow: hidden;
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
     }
+
     canvas {
       display: block;
     }
@@ -19,119 +21,123 @@
 <body>
   <canvas id="glCanvas"></canvas>
   <script>
+    "use strict";
+
+    function dist(a, b, c, d) {
+      let x = c - a;
+      let y = d - b;
+      return Math.sqrt(x * x + y * y);
+    }
     const canvas = document.getElementById("glCanvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     const gl = canvas.getContext("webgl");
-    if (!gl) { alert("WebGL not supported"); }
-
-    const vsSource = `
-    attribute vec3 a_position;
-    void main(){
-      gl_PointSize = 2.0;
-      gl_Position = vec4(a_position, 1.0);
+    if (!gl) {
+      alert("WebGL not supported");
     }
-    `;
-
-    const fsSource = `
-    precision mediump float;
-    uniform vec2 uResolution;
-    uniform vec2 uMouse;
-    void main(){
-      float d = distance(gl_FragCoord.xy, uMouse);
-      vec3 color = mix(vec3(0.2, 0.6, 1.0), vec3(1.0), smoothstep(0.0, 50.0, d));
-      gl_FragColor = vec4(color, 1.0);
-    }
-    `;
+    const vsSource = `attribute vec3 a_position;void main(){gl_PointSize=3.0;gl_Position=vec4(a_position,1.0);}`;
+    const fsSource = `precision mediump float;uniform vec2 uResolution;uniform vec2 uMouse;void main(){float d=distance(gl_FragCoord.xy,uMouse);vec3 color=mix(vec3(1.0,0.8,0.9),vec3(1.0,0.6,0.7),smoothstep(0.0,100.0,d));gl_FragColor=vec4(color,1.0);}`;
 
     function compileShader(src, type) {
-      const sh = gl.createShader(type);
-      gl.shaderSource(sh, src);
-      gl.compileShader(sh);
-      if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-        console.error(gl.getShaderInfoLog(sh));
-        gl.deleteShader(sh);
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(s));
+        gl.deleteShader(s);
         return null;
       }
-      return sh;
+      return s;
     }
-    const vertexShader = compileShader(vsSource, gl.VERTEX_SHADER);
-    const fragmentShader = compileShader(fsSource, gl.FRAGMENT_SHADER);
+    const vs = compileShader(vsSource, gl.VERTEX_SHADER);
+    const fs = compileShader(fsSource, gl.FRAGMENT_SHADER);
     const program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
       console.error(gl.getProgramInfoLog(program));
     }
     gl.useProgram(program);
-
     const uResolution = gl.getUniformLocation(program, "uResolution");
     const uMouse = gl.getUniformLocation(program, "uMouse");
     gl.uniform2f(uResolution, canvas.width, canvas.height);
-
-    let mousePos = [canvas.width / 2, canvas.height / 2];
-    let isMouseOver = false;
+    let mousePos = [canvas.width * 0.5, canvas.height * 0.5];
+    let isOver = false;
     const defaultMouse = [-100, -100];
-    canvas.addEventListener("mouseenter", () => { isMouseOver = true; });
-    canvas.addEventListener("mouseleave", () => { isMouseOver = false; });
+    canvas.addEventListener("mouseenter", () => {
+      isOver = true;
+    });
+    canvas.addEventListener("mouseleave", () => {
+      isOver = false;
+    });
     canvas.addEventListener("mousemove", e => {
       mousePos = [e.clientX, canvas.height - e.clientY];
     });
-
-    const NUM_SNOW = 2000;
-    const snowflakes = new Float32Array(NUM_SNOW * 3);
-    for (let i = 0; i < NUM_SNOW; i++) {
-      let idx = i * 3;
-      snowflakes[idx] = Math.random() * 2 - 1;
-      snowflakes[idx + 1] = Math.random() * 2 - 1;
-      snowflakes[idx + 2] = 0;
+    const N = 2000;
+    const pts = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) {
+      let j = i * 3;
+      pts[j] = Math.random() * 2 - 1;
+      pts[j + 1] = Math.random() * 2 - 1;
+      pts[j + 2] = 0;
     }
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, snowflakes, gl.DYNAMIC_DRAW);
-    const aPosition = gl.getAttribLocation(program, "a_position");
-    gl.enableVertexAttribArray(aPosition);
-    gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, 0, 0);
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, pts, gl.DYNAMIC_DRAW);
+    const aPos = gl.getAttribLocation(program, "a_position");
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
 
-    function updateSnow(delta) {
-      for (let i = 0; i < NUM_SNOW; i++) {
-        let idx = i * 3;
-        snowflakes[idx + 1] -= delta * 0.2;
-        if (snowflakes[idx + 1] < -1) {
-          snowflakes[idx + 1] = 1;
-          snowflakes[idx] = Math.random() * 2 - 1;
+    function update(delta) {
+      let mx = (mousePos[0] / canvas.width) * 2 - 1;
+      let my = (mousePos[1] / canvas.height) * 2 - 1;
+      for (let i = 0; i < N; i++) {
+        let j = i * 3;
+        pts[j + 1] -= delta * 0.05;
+        if (isOver) {
+          let px = (pts[j] + 1) * 0.5 * canvas.width;
+          let py = (pts[j + 1] + 1) * 0.5 * canvas.height;
+          let d = dist(px, py, mousePos[0], mousePos[1]);
+          if (d < 30) {
+            let dx = mx - pts[j];
+            let dy = my - pts[j + 1];
+            pts[j] += dx * delta * 0.1;
+            pts[j + 1] += dy * delta * 0.1;
+          }
+        }
+        if (pts[j + 1] < -1) {
+          pts[j + 1] = 1;
+          pts[j] = Math.random() * 2 - 1;
         }
       }
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-      gl.bufferSubData(gl.ARRAY_BUFFER, 0, snowflakes);
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, pts);
     }
+    gl.clearColor(1.0, 0.9, 0.95, 1.0);
+    let lastT = performance.now();
 
-    gl.clearColor(0, 0, 0, 1);
-    let lastTime = performance.now();
     function render() {
       let now = performance.now();
-      let delta = (now - lastTime) / 1000;
-      delta = Math.min(delta, 0.1);
-      lastTime = now;
-      updateSnow(delta);
-      if (isMouseOver) {
+      let dt = (now - lastT) * 0.001;
+      dt = Math.min(dt, 0.1);
+      lastT = now;
+      update(dt);
+      if (isOver) {
         gl.uniform2f(uMouse, mousePos[0], mousePos[1]);
       } else {
         gl.uniform2f(uMouse, defaultMouse[0], defaultMouse[1]);
       }
       gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.drawArrays(gl.POINTS, 0, NUM_SNOW);
+      gl.drawArrays(gl.POINTS, 0, N);
       requestAnimationFrame(render);
     }
     render();
-
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
-        lastTime = performance.now();
+        lastT = performance.now();
       }
     });
-
     window.addEventListener("resize", () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
