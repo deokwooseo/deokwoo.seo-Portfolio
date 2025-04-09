@@ -64,22 +64,24 @@
             Project <strong>Hello Quad</strong>
         </h1>
         <p class="section__subtitle section__subtitle--intro">3D Graphics</p>
-        <img src="../img/portfolio_thumbnails/01_hello.jpg" alt="a picture of this portfolio item" class="intro__img">
+        <img src="../img/portfolio_thumbnails/01_hello.png" alt="a picture of this portfolio item" class="intro__img">
     </section>
 
     <div class="portfolio-item-individual">
         <h2>Project Overview</h2>
-        <p>Provide a brief description of the project, its purpose, and what you aimed to achieve.</p>
+        <p>This project demonstrates a basic 3D graphics application using OpenGL, where a textured quad is rendered on screen. The goal was displays an animated quad that reacts to mouse movement with smooth transformations and dynamic shader effects, including a rainbow gradient.</p>
 
         <h2>Tasks Completed</h2>
         <ul>
-            <li>Describe the tasks you completed for this project.</li>
-            <li>Be specific about your contributions and the technologies used.</li>
+            <li>Developed modular classes to manage OpenGL resources such as Textures, VertexBuffers, IndexBuffers, and VertexArrays for improved code clarity and reusability.</li>
+            <li>Wrote vertex and fragment shaders to render the quad mesh and implement object transformations (rotation and scaling) driven by time and mouse input.</li>
+            <li>Integrated real-time uniform updates (including time, frame count, mouse position, and resolution) to support dynamic animations.</li>
+            <li>Created custom animation logic in the shader code, including a smooth color gradient using HSV to RGB conversion and a rotation effect responsive to user input.</li>
+
         </ul>
 
         <h2>Reflection</h2>
-        <p>Reflect on the project, discussing any challenges faced, solutions implemented, and what you learned from the
-            experience.</p>
+        <p>One of the challenges I faced was the issue of the quad and its texture (the image) rotating separately rather than as a single fixed unit. This made it difficult to achieve the intended effect of a smooth, unified rotation. I had to carefully adjust the shader logic so that both the quad vertices and the texture coordinates shared the same transformation. Overcoming this problem deepened my understanding of the GLSL pipeline and the importance of consistent uniform updates.</p>
     </div>
 
     <div class="portfolio-item-individual">
