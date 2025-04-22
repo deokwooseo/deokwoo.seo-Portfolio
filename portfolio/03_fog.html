@@ -69,18 +69,40 @@
 
     <div class="portfolio-item-individual">
         <h2>Project Overview</h2>
-        <p>Provide a brief description of the project, its purpose, and what you aimed to achieve.</p>
-
+        <p>
+            For the D03Fog demo, I explored and implemented three distinct fog 
+            techniques in linear distance fog, exponential fog, and screen space depth fog 
+            using gl_FragCoord.z. My goal was to deepen my understanding of coordinate spaces, 
+            shader math, and GPU performance, while providing an interactive demo where users can switch fog modes 
+            and tweak parameters in real time.
+        </p>
+    
         <h2>Tasks Completed</h2>
         <ul>
-            <li>Describe the tasks you completed for this project.</li>
-            <li>Be specific about your contributions and the technologies used.</li>
+            <li>Wrote three pairs of vertex/fragment shaders to compute fog factors via:
+                <ul>
+                    <li>Linear mix based on view space distance (smoothstep(uFogNear, uFogFar, dist)).</li>
+                    <li>Exponential fall off (1.0 - exp2(-density²·dist²·LOG2) clamped to [0,1]).</li>
+                    <li>Screen space depth fog using gl_FragCoord.z as the interpolant.</li>
+                </ul>
+            </li>
+            <li>Modified the vertex shaders to pass view space position or depth to the fragment stage, 
+                ensuring correct model→view→projection transforms.</li>
+            <li>Integrated ImGui controls to let users select fog mode and adjust near/far planes or density on the fly.</li>
+            <li>Tested and optimized for both native OpenGL on Windows and WebGL via Emscripten, achieving a polished web demo.</li>
         </ul>
-
+    
         <h2>Reflection</h2>
-        <p>Reflect on the project, discussing any challenges faced, solutions implemented, and what you learned from the
-            experience.</p>
+        <p>
+            Implementing fog variants taught me the subtle differences between linear and exponential blending, 
+            and the importance of consistent coordinate handling across shaders. Debugging depth based fog 
+            sharpened my understanding of gl_FragCoord.z versus true view space distance. 
+            Integrating real time UI controls with ImGui made parameter tuning intuitive, and porting to WebGL 
+            highlighted cross platform shader compatibility considerations. Overall, this exercise strengthened 
+            my GLSL proficiency and my ability to deliver interactive, configurable visual effects.
+        </p>
     </div>
+    
 
     <div class="portfolio-item-individual">
         <h2>Demo</h2>
