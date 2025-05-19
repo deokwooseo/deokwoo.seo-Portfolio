@@ -64,23 +64,68 @@
             Project <strong>Toon Shading</strong>
         </h1>
         <p class="section__subtitle section__subtitle--intro">3D Graphics</p>
-        <img src="../img/portfolio_thumbnails/04_toon.jpg" alt="a picture of this portfolio item" class="intro__img">
+        <img src="../img/portfolio_thumbnails/04_toon.png" alt="a picture of this portfolio item" class="intro__img">
     </section>
 
     <div class="portfolio-item-individual">
         <h2>Project Overview</h2>
-        <p>Provide a brief description of the project, its purpose, and what you aimed to achieve.</p>
-
+        <p>
+            In the D04ToonShading demo I built a real time toon shading framework in OpenGL, showcasing three stylized
+            lighting techniques Custom Range, Uniform Range, and Gradient Texture discretization augmented with
+            adaptive anti aliasing and linear fog. I generated a procedural Trefoil Knot mesh, vertex & fragment shaders for Blinn Phong lighting, and provided an ImGui interface for live parameter control.
+        </p>
+    
         <h2>Tasks Completed</h2>
         <ul>
-            <li>Describe the tasks you completed for this project.</li>
-            <li>Be specific about your contributions and the technologies used.</li>
+            <li>
+                <strong>Procedural Geometry:</strong> Implemented <code>create_trefoil</code> in <code>Mesh.cpp</code> to
+                generate and normalize a high resolution Trefoil Knot.
+            </li>
+            <li>
+                <strong>Vertex Shader (<code>toon.vert</code>):</strong> Computed model→view→projection transforms, passed
+                view space normals via a 3×3 normal matrix, and forwarded view position for fog.
+            </li>
+            <li>
+                <strong>Custom-Range Toon (<code>01_custom_range_toon.frag</code>):</strong> Four user defined thresholds
+                with <code>smoothstep()</code> or <code>step()</code> for anti-aliased banding.
+            </li>
+            <li>
+                <strong>Uniform-Range Toon (<code>02_uniform_range_toon.frag</code>):</strong> N equal diffuse chunks,
+                discretized mathematically with optional derivative based smoothing.
+            </li>
+            <li>
+                <strong>Gradient-Texture Toon (<code>03_gradient_texture_toon.frag</code>):</strong> 1D lookup texture for
+                artist driven shading, with optional multi sample anti aliasing around each texel.
+            </li>
+            <li>
+                <strong>Anti-Aliasing:</strong> Leveraged <code>fwidth()</code> and <code>smoothstep()</code> to soften
+                both diffuse bands and specular edges adaptively.
+            </li>
+            <li>
+                <strong>Linear Fog:</strong> Applied a view space depth mix uniformly across all three toon modes for
+                atmospheric depth cueing.
+            </li>
+            <li>
+                <strong>UI Integration:</strong> Exposed all parameters thresholds, chunk count, gradient selection, fog
+                settings, light direction, shininess via ImGui for real-time tuning.
+            </li>
+            <li>
+                <strong>Cross Platform Delivery:</strong> Used GL:: wrappers, GLM, SDL+ImGui, clang-format, and verified
+                builds on Windows x64 and webgl.
+            </li>
         </ul>
-
+    
         <h2>Reflection</h2>
-        <p>Reflect on the project, discussing any challenges faced, solutions implemented, and what you learned from the
-            experience.</p>
+        <p>
+            Balancing sharp, stylized bands with smooth visual transitions was the core challenge. Implementing
+            derivative based anti aliasing taught me how <code>fwidth()</code> adapts to screen space variation and
+            maintains crisp edges at any zoom. Correctly computing and passing the normal matrix reinforced my
+            understanding of model vs. view space. The gradient texture approach highlighted the power of artist driven
+            control over pure math. Finally, integrating everything under a single ImGui UI and porting seamlessly to
+            WebGL strengthened my end to end graphics pipeline expertise.
+        </p>
     </div>
+      
 
     <div class="portfolio-item-individual">
         <h2>Demo</h2>
