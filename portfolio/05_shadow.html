@@ -64,22 +64,59 @@
             Project <strong>Shadow Mapping</strong>
         </h1>
         <p class="section__subtitle section__subtitle--intro">3D Graphics</p>
-        <img src="../img/portfolio_thumbnails/05_shadow.jpg" alt="a picture of this portfolio item" class="intro__img">
+        <img src="../img/portfolio_thumbnails/05_shadow.png" alt="a picture of this portfolio item" class="intro__img">
     </section>
 
     <div class="portfolio-item-individual">
-        <h2>Project Overview</h2>
-        <p>Provide a brief description of the project, its purpose, and what you aimed to achieve.</p>
+            <h2>Project Overview</h2>
+            <p>
+                Implemented shadow mapping for a perspective light in a real time 3D demo. Generated a depth map from the
+                light’s POV, then sampled it to render hard shadows in the main pass. Added exponential fog, gamma correction,
+                and ImGui controls for light parameters, depth bias, and texture resolution. The demo lets you move both camera
+                and light, toggle the depth preview, and visualize the light’s frustum in world space.
+            </p>
+        
+            <h2>Tasks Completed</h2>
+            <ul>
+                <li>Extended <code>Texture</code> to create depth textures (with comparison mode) and RGBA8 targets.</li>
+                <li>Built a <code>FrameBuffer</code> class that attaches depth/color textures and validates completeness without
+                    DSA.</li>
+                <li>Wrote GLSL shaders to:
+                    <ul>
+                        <li>Render depth into the shadow map with polygon offset.</li>
+                        <li>Sample that depth in the main pass (using <code>textureProj()</code>) to compute shadows, apply
+                            “ignore shadows behind light,” gamma correct, and add exponential fog.</li>
+                        <li>Display the linearized depth texture on screen.</li>
+                        <li>Draw a wireframe cube (12 edges) to show the light’s frustum.</li>
+                    </ul>
+                </li>
+                <li>Integrated ImGui controls to switch cameras, adjust the light’s FOV/near-far planes, bias, culling mode, and
+                    shadow map size, plus toggles for the frustum and depth preview.</li>
+                <li>Enabled WASD+QE+mouse movement for both viewer and light cameras and built a random scene of primitives with
+                    random materials for testing shadows and specular highlights.</li>
+            </ul>
+        
+            <h2>Reflection</h2>
+            <p>
+                My first attempt to draw the frustum used the NDC cube’s line data directly, but that produced extra diagonals
+                on each face, making a star shaped outline instead of just 12 edges. I had to rebuild a proper 8 vertex,
+                24 index edge cube and correctly compute <code>inverse(lightProj) × lightToWorld</code> to remove those unwanted
+                lines.
+            </p>
+            <p>
+                Another failure was a phantom “pillar” shadow behind the light: fragments with negative shadow space z still
+                sampled the depth map and cast an incorrect shadow. I fixed it only after adding
+                <code>if (vPositionInShadowSpace.z &lt; 0 && !uDoShadowBehindLight) shadow = 1.0;</code>
+                in <code>shadows.frag</code>.
+            </p>
+            <p>
+                Finally, tuning depth bias was a struggle: too little offset caused “shadow acne,” too much created a gap.
+                
+            </p>
+        </div>
+        
 
-        <h2>Tasks Completed</h2>
-        <ul>
-            <li>Describe the tasks you completed for this project.</li>
-            <li>Be specific about your contributions and the technologies used.</li>
-        </ul>
-
-        <h2>Reflection</h2>
-        <p>Reflect on the project, discussing any challenges faced, solutions implemented, and what you learned from the
-            experience.</p>
+        
     </div>
 
     <div class="portfolio-item-individual">
