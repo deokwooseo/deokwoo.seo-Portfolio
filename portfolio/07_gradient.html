@@ -63,23 +63,30 @@
             Project <strong>Gradient Noise</strong>
         </h1>
         <p class="section__subtitle section__subtitle--intro">3D Graphics</p>
-        <img src="../img/portfolio_thumbnails/07_gradient.jpg" alt="a picture of this portfolio item" class="intro__img">
+        <img src="../img/portfolio_thumbnails/07_gradient.png" alt="a picture of this portfolio item" class="intro__img">
     </section>
 
     <div class="portfolio-item-individual">
         <h2>Project Overview</h2>
-        <p>Provide a brief description of the project, its purpose, and what you aimed to achieve.</p>
-
+        <p>Implemented a 3D gradient noise generator on the GPU to create various noise patterns and visualize them as
+            textures and terrain surfaces.</p>
+    
         <h2>Tasks Completed</h2>
         <ul>
-            <li>Describe the tasks you completed for this project.</li>
-            <li>Be specific about your contributions and the technologies used.</li>
+            <li>Wrote a vertex and fragment shader to produce improved Perlin gradient noise in 3D</li>
+            <li>Created an offscreen framebuffer with an R32F texture to store noise values</li>
+            <li>Added support for plain gradient noise fractal sum turbulence marble and wood patterns</li>
+            <li>Built a simple shader to display the noise slice as a textured quad and another to displace a plane mesh
+                into a terrain surface</li>
         </ul>
-
+    
         <h2>Reflection</h2>
-        <p>Reflect on the project, discussing any challenges faced, solutions implemented, and what you learned from the
-            experience.</p>
+        <p>When running the web release build I saw an Uncaught 1356536 error that I had not encountered before. After
+            debugging I discovered the frame buffer code tried to access colorTexture through a private method. Moving the
+            Texture&amp; ColorTexture() method into public fixed the error. This taught me to check access modifiers
+            carefully when exposing GPU resources.</p>
     </div>
+    
 
     <div class="portfolio-item-individual">
         <h2>Demo</h2>
